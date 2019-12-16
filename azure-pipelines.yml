@@ -7,8 +7,17 @@ trigger:
 - master
 
 jobs:
-- job: Build
+- job: CreateACI
+  pool: server
+  steps:
+  - task: AzureFunction@1
+    inputs:
+      function: https://tkssqlicreateagent.azurewebsites.net/api/HttpTriggerCreateAgent
+      key: $(azureFunctionKey)
+      method: 'GET'
+      queryParameters: 'name=aci-custom-linux-agent2&action=start'
 
+- job: Build
   pool:
     name: TryDevOps
     demands: Agent.Name -equals aci-custom-linux-agent
@@ -22,3 +31,13 @@ jobs:
   steps:
   - script: dotnet build --configuration $(buildConfiguration)
     displayName: 'dotnet build $(buildConfiguration)'
+
+- job: DeleteACI
+  pool: server
+  steps:
+  - task: AzureFunction@1
+    inputs:
+      function: https://tkssqlicreateagent.azurewebsites.net/api/HttpTriggerCreateAgent
+      key: $(azureFunctionKey)
+      method: 'GET'
+      queryParameters: 'name=aci-custom-linux-agent2&action=stop'
