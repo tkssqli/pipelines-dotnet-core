@@ -11,7 +11,7 @@ jobs:
 
   pool:
     name: TryDevOps
-    demands: Agent.Name -equals aci-custom-linux-agent2
+    demands: Agent.Name -equals aci-custom-linux-agent
     #vmImage: 'ubuntu-16.04'
     
   #container: mcr.microsoft.com/dotnet/core/sdk:2.2
