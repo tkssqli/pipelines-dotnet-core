@@ -6,16 +6,19 @@
 trigger:
 - master
 
-pool:
-  name: TryDevOps
-  demands: Agent.Name -equals aci-custom-linux-agent
-  #vmImage: 'ubuntu-16.04'
-  
-#container: mcr.microsoft.com/dotnet/core/sdk:2.2
+jobs:
+- job: Build
 
-variables:
-  buildConfiguration: 'Release'
+  pool:
+    name: TryDevOps
+    demands: Agent.Name -equals aci-custom-linux-agent2
+    #vmImage: 'ubuntu-16.04'
+    
+  #container: mcr.microsoft.com/dotnet/core/sdk:2.2
 
-steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+  variables:
+    buildConfiguration: 'Release'
+
+  steps:
+  - script: dotnet build --configuration $(buildConfiguration)
+    displayName: 'dotnet build $(buildConfiguration)'
