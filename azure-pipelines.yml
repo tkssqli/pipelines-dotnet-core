@@ -34,6 +34,7 @@ jobs:
 
 - job: DeleteACI
   pool: server
+  dependsOn: Build
   steps:
   - task: AzureFunction@1
     inputs:
