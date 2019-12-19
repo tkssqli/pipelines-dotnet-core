@@ -6,11 +6,44 @@
 trigger:
 - master
 
-pool: MyAgentOnVM
+jobs:
+- job: StartVM
+  pool: server
+  steps:
+  - task: AzureFunction@1
+    inputs:
+      function: 'https://tkssqlitogglevm.azurewebsites.net/api/HttpTrigger1'
+      key: $(azureFunctionKey)
+      method: 'POST'
+      body: |
+        {
+            "action": "start",
+            "vmname": "BuildAgentVM",
+            "resourcegroup": "DevOps"
+        }
+      waitForCompletion: 'false'
 
-variables:
-  buildConfiguration: 'Release'
+- job: Build
+  pool: MyAgentOnVM
+  variables:
+    buildConfiguration: 'Release'
+  steps:
+  - script: dotnet build --configuration $(buildConfiguration)
+    displayName: 'dotnet build $(buildConfiguration)'
 
-steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+- job: StopVM
+  pool: server
+  dependsOn: Build
+  steps:
+  - task: AzureFunction@1
+    inputs:
+      function: 'https://tkssqlitogglevm.azurewebsites.net/api/HttpTrigger1'
+      key: $(azureFunctionKey)
+      method: 'POST'
+      body: |
+        {
+            "action": "stop",
+            "vmname": "BuildAgentVM",
+            "resourcegroup": "DevOps"
+        }
+      waitForCompletion: 'false'
